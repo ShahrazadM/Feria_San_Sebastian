@@ -94,10 +94,8 @@ st.markdown("""
         animation: carritoSubiendo 1.5s ease-out forwards;
     }
     
-    /* === ESTILOS BASE PARA BOTONES === */
+/* === ESTILOS BASE PARA BOTONES (SIN COLOR) === */
 .stButton > button {
-    background-color: #4CAF50 !important;
-    color: white !important;
     border-radius: 10px !important;
     border: none !important;
     font-weight: bold !important;
@@ -107,39 +105,67 @@ st.markdown("""
     width: 100% !important;
 }
 .stButton > button:hover {
-    background-color: #45a049 !important;
     transform: scale(1.02) !important;
 }
 
-/* === BOTÓN CONFIRMAR PAGO (CELESTE) - Usando el texto del botón === */
-button:has(> div:contains("CONFIRMAR PAGO")) {
+/* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
+button:contains("CONFIRMAR PAGO") {
     background-color: #03A9F4 !important;
     color: white !important;
 }
-button:has(> div:contains("CONFIRMAR PAGO")):hover {
+button:contains("CONFIRMAR PAGO"):hover {
     background-color: #0288D1 !important;
 }
 
-/* === BOTÓN RECHAZAR (ROJO) - Usando el texto del botón === */
-button:has(> div:contains("RECHAZAR")),
-button:has(> div:contains("CANCELAR")) {
+/* === BOTÓN RECHAZAR (ROJO) === */
+button:contains("RECHAZAR"),
+button:contains("CANCELAR") {
     background-color: #f44336 !important;
     color: white !important;
 }
-button:has(> div:contains("RECHAZAR")):hover,
-button:has(> div:contains("CANCELAR")):hover {
+button:contains("RECHAZAR"):hover,
+button:contains("CANCELAR"):hover {
     background-color: #d32f2f !important;
 }
 
 /* === BOTÓN CERRAR SESIÓN (ROJO) === */
-button:has(> div:contains("Cerrar sesión")),
-button:has(> div:contains("CERRAR SESIÓN")) {
+button:contains("Cerrar sesión"),
+button:contains("CERRAR SESIÓN"),
+button:contains("Cerrar Sesión (Feriante)") {
     background-color: #f44336 !important;
     color: white !important;
 }
-button:has(> div:contains("Cerrar sesión")):hover,
-button:has(> div:contains("CERRAR SESIÓN")):hover {
-    background-color: #d32f2f !important;
+
+/* === BOTÓN INGRESAR (VERDE OSCURO) === */
+button:contains("Ingresar") {
+    background-color: #2E7D32 !important;
+    color: white !important;
+}
+button:contains("Ingresar"):hover {
+    background-color: #1B5E20 !important;
+}
+
+/* === BOTÓN AGREGAR, GUARDAR, VACIAR (VERDE) === */
+button:contains("Agregar"),
+button:contains("Guardar"),
+button:contains("Vaciar"),
+button:contains("Registrar"),
+button:contains("➕"),
+button:contains("💾"),
+button:contains("🗑️ Vaciar Carrito") {
+    background-color: #4CAF50 !important;
+    color: white !important;
+}
+button:contains("Agregar"):hover,
+button:contains("Guardar"):hover,
+button:contains("Vaciar"):hover {
+    background-color: #45a049 !important;
+}
+
+/* === SIDEBAR - VERDE === */
+[data-testid="stSidebar"] .stButton > button {
+    background-color: #4CAF50 !important;
+    color: white !important;
 }
     
     /* === CARRITO CARD === */
