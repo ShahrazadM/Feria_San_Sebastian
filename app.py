@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 # ============================================
 st.set_page_config(page_title="Frutería San Sebastián", page_icon="🛒", layout="wide")
 
-# CSS personalizado - Versión completa y corregida para iPhone
+# CSS personalizado - Incluye animación del carrito
 st.markdown("""
 <style>
     /* === FONDO GENERAL === */
@@ -68,6 +68,32 @@ st.markdown("""
         font-size: 1.2rem !important;
     }
     
+    /* === ANIMACIÓN DEL CARRITO SUBIENDO === */
+    @keyframes carritoSubiendo {
+        0% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(-100px) scale(1.3);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-200px) scale(1.5);
+            opacity: 0;
+        }
+    }
+    
+    .carrito-animado {
+        position: fixed;
+        bottom: 20%;
+        right: 20%;
+        font-size: 5rem;
+        z-index: 9999;
+        pointer-events: none;
+        animation: carritoSubiendo 1.5s ease-out forwards;
+    }
+    
     /* === BOTONES NORMALES (VERDE) === */
     .stButton > button {
         background-color: #4CAF50 !important;
@@ -93,6 +119,16 @@ st.markdown("""
     button:has(> div:contains("CONFIRMAR PAGO")):hover,
     button:contains("CONFIRMAR PAGO"):hover {
         background-color: #0288D1 !important;
+    }
+    
+    /* === BOTÓN CERRAR SESIÓN (ROJO) === */
+    button:contains("Cerrar sesión"),
+    button:contains("CERRAR SESIÓN") {
+        background-color: #f44336 !important;
+    }
+    button:contains("Cerrar sesión"):hover,
+    button:contains("CERRAR SESIÓN"):hover {
+        background-color: #d32f2f !important;
     }
     
     /* === CARRITO CARD === */
@@ -303,6 +339,20 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
+# FUNCIÓN PARA ANIMACIÓN DEL CARRITO
+# ============================================
+
+def mostrar_carrito_animado():
+    """Muestra una animación de carrito subiendo"""
+    carrito_html = """
+    <div class="carrito-animado">
+        🛒
+    </div>
+    """
+    st.markdown(carrito_html, unsafe_allow_html=True)
+    time.sleep(1.5)
+
+# ============================================
 # HASH PARA CONTRASEÑAS
 # ============================================
 
@@ -343,6 +393,15 @@ def logout_ayudante():
     st.session_state.ayudante_autenticado = False
     st.session_state.rol = "ayudante_no_auth"
     st.session_state.usuario = "Sin autenticar"
+
+def logout_feriante():
+    """Cierra la sesión del feriante"""
+    st.session_state.autenticado = False
+    st.session_state.rol = "ayudante_no_auth"
+    st.session_state.usuario = "Sin autenticar"
+    st.session_state.ayudante_autenticado = False
+    st.session_state.ayudante_actual = None
+    st.session_state.carrito = []
 
 def agregar_ayudante(nombre, clave):
     if nombre in st.session_state.ayudantes:
@@ -438,6 +497,11 @@ with st.sidebar:
         st.markdown("---")
         if st.button("🔓 Cambiar a Modo Ayudante", use_container_width=True):
             cambiar_a_modo_ayudante()
+            st.rerun()
+        
+        # Botón de Cerrar Sesión para Feriante
+        if st.button("🚪 Cerrar Sesión (Feriante)", use_container_width=True):
+            logout_feriante()
             st.rerun()
     
     elif st.session_state.rol == "ayudante":
@@ -1115,9 +1179,10 @@ if st.session_state.rol == "feriante":
                     if venta_id:
                         st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                         st.session_state.carrito = []
-                        st.balloons()
+                        # Mostrar animación del carrito en lugar de globos
+                        mostrar_carrito_animado()
                         st.cache_data.clear()
-                        time.sleep(1)
+                        time.sleep(0.5)
                         st.rerun()
                 
                 if st.button("🗑️ Vaciar Carrito", key="vaciar_feriante"):
@@ -1311,9 +1376,10 @@ elif st.session_state.rol == "ayudante":
                 if venta_id:
                     st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                     st.session_state.carrito = []
-                    st.balloons()
+                    # Mostrar animación del carrito en lugar de globos
+                    mostrar_carrito_animado()
                     st.cache_data.clear()
-                    time.sleep(1)
+                    time.sleep(0.5)
                     st.rerun()
             
             if st.button("🗑️ Vaciar Carrito", key="vaciar_ayudante"):
