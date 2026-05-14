@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import time
-from db_config import get_connection
 import hashlib
+from db_config import get_supabase
+from datetime import datetime, timedelta
 
 # ============================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -300,6 +301,7 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
 # ============================================
 # HASH PARA CONTRASEÑAS
 # ============================================
@@ -486,188 +488,325 @@ with st.sidebar:
 st.markdown("---")
 
 # ============================================
-# FUNCIONES DE BASE DE DATOS
+# FUNCIONES DE BASE DE DATOS (SUPABASE VERSION)
 # ============================================
 
 @st.cache_data(ttl=5)
 def get_productos():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id, feriante_email, nombre, precio_por_kilo, stock_kg FROM productos ORDER BY nombre")
-    productos_raw = cur.fetchall()
-    cur.close()
-    conn.close()
-    productos = []
-    for p in productos_raw:
-        productos.append((p[0], p[1], p[2], float(p[3]), float(p[4])))
-    return productos
+    """Obtiene productos desde Supabase"""
+    supabase = get_supabase()
+    if not supabase:
+        return []
+    
+    try:
+        response = supabase.table('productos').select('*').execute()
+        productos = response.data
+        
+        # Convertir a lista de tuplas para mantener compatibilidad
+        productos_tuplas = []
+        for p in productos:
+            productos_tuplas.append((
+                p['id'],
+                p['feriante_email'],
+                p['nombre'],
+                float(p['precio_por_kilo']),
+                float(p['stock_kg'])
+            ))
+        return productos_tuplas
+    except Exception as e:
+        st.error(f"Error al cargar productos: {e}")
+        return []
 
 def agregar_producto(feriante_email, nombre, precio, stock):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO productos (feriante_email, nombre, precio_por_kilo, stock_kg)
-        VALUES (%s, %s, %s, %s)
-    """, (feriante_email, nombre, precio, stock))
-    conn.commit()
-    cur.close()
-    conn.close()
+    """Agrega un nuevo producto a Supabase"""
+    supabase = get_supabase()
+    if not supabase:
+        return False
+    
+    try:
+        supabase.table('productos').insert({
+            'feriante_email': feriante_email,
+            'nombre': nombre,
+            'precio_por_kilo': precio,
+            'stock_kg': stock
+        }).execute()
+        return True
+    except Exception as e:
+        st.error(f"Error al agregar producto: {e}")
+        return False
 
 def actualizar_producto(producto_id, precio, stock):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        UPDATE productos 
-        SET precio_por_kilo = %s, stock_kg = %s
-        WHERE id = %s
-    """, (precio, stock, producto_id))
-    conn.commit()
-    cur.close()
-    conn.close()
+    """Actualiza precio y stock de un producto"""
+    supabase = get_supabase()
+    if not supabase:
+        return False
+    
+    try:
+        supabase.table('productos').update({
+            'precio_por_kilo': precio,
+            'stock_kg': stock
+        }).eq('id', producto_id).execute()
+        return True
+    except Exception as e:
+        st.error(f"Error al actualizar producto: {e}")
+        return False
 
 def eliminar_producto(producto_id):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM venta_detalles WHERE producto_id = %s", (producto_id,))
-    cur.execute("DELETE FROM productos WHERE id = %s", (producto_id,))
-    conn.commit()
-    cur.close()
-    conn.close()
+    """Elimina un producto y sus ventas asociadas"""
+    supabase = get_supabase()
+    if not supabase:
+        return False
+    
+    try:
+        # Primero eliminar detalles de venta (por ON DELETE CASCADE no sería necesario,
+        # pero lo hacemos explícito por si acaso)
+        supabase.table('venta_detalles').delete().eq('producto_id', producto_id).execute()
+        # Luego eliminar el producto
+        supabase.table('productos').delete().eq('id', producto_id).execute()
+        return True
+    except Exception as e:
+        st.error(f"Error al eliminar producto: {e}")
+        return False
 
 def registrar_venta_completa(feriante_email, items_carrito, tipo_pago, total):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO ventas (feriante_email, total, tipo_pago)
-        VALUES (%s, %s, %s)
-        RETURNING id
-    """, (feriante_email, total, tipo_pago))
-    venta_id = cur.fetchone()[0]
-    for item in items_carrito:
-        cur.execute("""
-            INSERT INTO venta_detalles (venta_id, producto_id, cantidad_kg, precio_por_kilo, subtotal)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (venta_id, item['producto_id'], item['cantidad'], item['precio'], item['subtotal']))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return venta_id
+    """
+    Registra una venta completa en Supabase.
+    NOTA: El trigger 'descontar_stock' en Supabase actualizará el stock automáticamente
+    """
+    supabase = get_supabase()
+    if not supabase:
+        return None
+    
+    try:
+        # 1. Insertar encabezado de venta
+        venta_response = supabase.table('ventas').insert({
+            'feriante_email': feriante_email,
+            'total': total,
+            'tipo_pago': tipo_pago
+        }).execute()
+        
+        venta_id = venta_response.data[0]['id']
+        
+        # 2. Insertar detalles de venta
+        for item in items_carrito:
+            supabase.table('venta_detalles').insert({
+                'venta_id': venta_id,
+                'producto_id': item['producto_id'],
+                'cantidad_kg': item['cantidad'],
+                'precio_por_kilo': item['precio'],
+                'subtotal': item['subtotal']
+            }).execute()
+        
+        return venta_id
+    except Exception as e:
+        st.error(f"Error al registrar venta: {e}")
+        return None
 
 def registrar_merma(producto_id, cantidad_kg, email, motivo):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO ventas (feriante_email, total, tipo_pago, observacion)
-        VALUES (%s, 0, 'merma', %s)
-        RETURNING id
-    """, (email, motivo))
-    venta_id = cur.fetchone()[0]
-    cur.execute("""
-        INSERT INTO venta_detalles (venta_id, producto_id, cantidad_kg, precio_por_kilo, subtotal)
-        VALUES (%s, %s, %s, 0, 0)
-    """, (venta_id, producto_id, cantidad_kg))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return venta_id
+    """
+    Registra una merma en Supabase.
+    El trigger de stock también afecta a las mermas (precio 0)
+    """
+    supabase = get_supabase()
+    if not supabase:
+        return None
+    
+    try:
+        # 1. Insertar venta como merma
+        venta_response = supabase.table('ventas').insert({
+            'feriante_email': email,
+            'total': 0,
+            'tipo_pago': 'merma',
+            'observacion': motivo
+        }).execute()
+        
+        venta_id = venta_response.data[0]['id']
+        
+        # 2. Insertar detalle de merma (precio 0, subtotal 0)
+        supabase.table('venta_detalles').insert({
+            'venta_id': venta_id,
+            'producto_id': producto_id,
+            'cantidad_kg': cantidad_kg,
+            'precio_por_kilo': 0,
+            'subtotal': 0
+        }).execute()
+        
+        return venta_id
+    except Exception as e:
+        st.error(f"Error al registrar merma: {e}")
+        return None
 
 @st.cache_data(ttl=30)
 def get_ventas_semanales():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT 
-            DATE(v.fecha) as fecha,
-            p.nombre as producto,
-            vd.cantidad_kg,
-            vd.subtotal,
-            v.tipo_pago
-        FROM ventas v
-        JOIN venta_detalles vd ON v.id = vd.venta_id
-        JOIN productos p ON vd.producto_id = p.id
-        WHERE v.fecha >= NOW() - INTERVAL '7 days'
-        AND v.tipo_pago != 'merma'
-        ORDER BY v.fecha DESC
-    """)
-    ventas = cur.fetchall()
-    cur.close()
-    conn.close()
-    if ventas:
-        df = pd.DataFrame(ventas, columns=['fecha', 'producto', 'cantidad_kg', 'subtotal', 'tipo_pago'])
-        df['cantidad_kg'] = df['cantidad_kg'].astype(float)
-        df['subtotal'] = df['subtotal'].astype(float)
+    """Obtiene ventas de los últimos 7 días desde Supabase"""
+    supabase = get_supabase()
+    if not supabase:
+        return pd.DataFrame()
+    
+    try:
+        # Obtener fecha de hace 7 días
+        fecha_limite = (datetime.now() - timedelta(days=7)).isoformat()
+        
+        # Consulta con join para obtener los datos completos
+        response = supabase.table('ventas')\
+            .select('''
+                fecha,
+                tipo_pago,
+                total,
+                venta_detalles!inner (
+                    cantidad_kg,
+                    subtotal,
+                    productos!inner (
+                        nombre
+                    )
+                )
+            ''')\
+            .gte('fecha', fecha_limite)\
+            .neq('tipo_pago', 'merma')\
+            .execute()
+        
+        ventas = response.data
+        
+        if not ventas:
+            return pd.DataFrame()
+        
+        # Procesar datos anidados
+        registros = []
+        for venta in ventas:
+            for detalle in venta.get('venta_detalles', []):
+                registros.append({
+                    'fecha': venta['fecha'][:10],  # Solo fecha
+                    'producto': detalle['productos']['nombre'],
+                    'cantidad_kg': float(detalle['cantidad_kg']),
+                    'subtotal': float(detalle['subtotal']),
+                    'tipo_pago': venta['tipo_pago']
+                })
+        
+        df = pd.DataFrame(registros)
         return df
-    return pd.DataFrame()
-
-# ============================================
-# FUNCIONES PARA MERMAS
-# ============================================
+    except Exception as e:
+        st.error(f"Error al cargar ventas: {e}")
+        return pd.DataFrame()
 
 @st.cache_data(ttl=30)
 def get_resumen_mermas():
-    """Obtiene el resumen de mermas por producto"""
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT 
-            p.nombre as producto,
-            SUM(vd.cantidad_kg) as total_kg_perdidos,
-            COUNT(vd.id) as cantidad_mermas
-        FROM ventas v
-        JOIN venta_detalles vd ON v.id = vd.venta_id
-        JOIN productos p ON vd.producto_id = p.id
-        WHERE v.tipo_pago = 'merma'
-        GROUP BY p.nombre
-        ORDER BY total_kg_perdidos DESC
-    """)
-    resumen = cur.fetchall()
-    cur.close()
-    conn.close()
-    if resumen:
-        df = pd.DataFrame(resumen, columns=['producto', 'total_kg_perdidos', 'cantidad_mermas'])
-        df['total_kg_perdidos'] = df['total_kg_perdidos'].astype(float)
+    """Obtiene el resumen de mermas por producto desde Supabase"""
+    supabase = get_supabase()
+    if not supabase:
+        return pd.DataFrame()
+    
+    try:
+        # Consulta para obtener resumen de mermas
+        response = supabase.table('ventas')\
+            .select('''
+                venta_detalles!inner (
+                    cantidad_kg,
+                    productos!inner (
+                        nombre
+                    )
+                )
+            ''')\
+            .eq('tipo_pago', 'merma')\
+            .execute()
+        
+        mermas = response.data
+        
+        if not mermas:
+            return pd.DataFrame()
+        
+        # Agrupar por producto
+        resumen = {}
+        for venta in mermas:
+            for detalle in venta.get('venta_detalles', []):
+                nombre = detalle['productos']['nombre']
+                cantidad = float(detalle['cantidad_kg'])
+                
+                if nombre not in resumen:
+                    resumen[nombre] = {'total_kg': 0, 'cantidad': 0}
+                resumen[nombre]['total_kg'] += cantidad
+                resumen[nombre]['cantidad'] += 1
+        
+        # Convertir a DataFrame
+        df = pd.DataFrame([
+            {'producto': k, 'total_kg_perdidos': v['total_kg'], 'cantidad_mermas': v['cantidad']}
+            for k, v in resumen.items()
+        ]).sort_values('total_kg_perdidos', ascending=False)
+        
         return df
-    return pd.DataFrame()
+    except Exception as e:
+        st.error(f"Error al cargar resumen de mermas: {e}")
+        return pd.DataFrame()
 
 @st.cache_data(ttl=30)
 def get_mermas_detalle():
-    """Obtiene el detalle de todas las mermas"""
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT 
-            DATE(v.fecha) as fecha,
-            p.nombre as producto,
-            vd.cantidad_kg,
-            v.observacion as motivo
-        FROM ventas v
-        JOIN venta_detalles vd ON v.id = vd.venta_id
-        JOIN productos p ON vd.producto_id = p.id
-        WHERE v.tipo_pago = 'merma'
-        ORDER BY v.fecha DESC
-    """)
-    mermas = cur.fetchall()
-    cur.close()
-    conn.close()
-    if mermas:
-        df = pd.DataFrame(mermas, columns=['fecha', 'producto', 'cantidad_kg', 'motivo'])
-        df['cantidad_kg'] = df['cantidad_kg'].astype(float)
+    """Obtiene el detalle de todas las mermas desde Supabase"""
+    supabase = get_supabase()
+    if not supabase:
+        return pd.DataFrame()
+    
+    try:
+        response = supabase.table('ventas')\
+            .select('''
+                fecha,
+                observacion,
+                venta_detalles!inner (
+                    cantidad_kg,
+                    productos!inner (
+                        nombre
+                    )
+                )
+            ''')\
+            .eq('tipo_pago', 'merma')\
+            .order('fecha', desc=True)\
+            .execute()
+        
+        mermas = response.data
+        
+        if not mermas:
+            return pd.DataFrame()
+        
+        registros = []
+        for venta in mermas:
+            for detalle in venta.get('venta_detalles', []):
+                registros.append({
+                    'fecha': venta['fecha'][:10],
+                    'producto': detalle['productos']['nombre'],
+                    'cantidad_kg': float(detalle['cantidad_kg']),
+                    'motivo': venta.get('observacion', 'No especificado')
+                })
+        
+        df = pd.DataFrame(registros)
         return df
-    return pd.DataFrame()
+    except Exception as e:
+        st.error(f"Error al cargar detalle de mermas: {e}")
+        return pd.DataFrame()
 
 def get_stock_actual_mermas():
     """Obtiene el stock actual de productos (para comparar con mermas)"""
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT nombre, stock_kg FROM productos ORDER BY nombre
-    """)
-    stock = cur.fetchall()
-    cur.close()
-    conn.close()
-    if stock:
-        return pd.DataFrame(stock, columns=['producto', 'stock_actual_kg'])
-    return pd.DataFrame()
+    supabase = get_supabase()
+    if not supabase:
+        return pd.DataFrame()
+    
+    try:
+        response = supabase.table('productos')\
+            .select('nombre, stock_kg')\
+            .order('nombre')\
+            .execute()
+        
+        productos = response.data
+        
+        if not productos:
+            return pd.DataFrame()
+        
+        df = pd.DataFrame([
+            {'producto': p['nombre'], 'stock_actual_kg': float(p['stock_kg'])}
+            for p in productos
+        ])
+        
+        return df
+    except Exception as e:
+        st.error(f"Error al cargar stock actual: {e}")
+        return pd.DataFrame()
 
 # ============================================
 # FUNCIONES DEL CARRITO
@@ -771,9 +910,6 @@ st.markdown(f"""
 if st.session_state.rol == "feriante":
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📦 Inventario", "➕ Agregar Producto", "🛒 Venta", "📊 Reportes", "⚠️ Mermas"])
     
-        # ----- TAB 1: VER INVENTARIO Y EDITAR -----
-    # ----- TAB 2: AGREGAR NUEVO PRODUCTO -----
-    # ----- TAB 1: VER INVENTARIO Y EDITAR -----
     # ----- TAB 1: VER INVENTARIO Y EDITAR -----
     with tab1:
         st.header("📦 Inventario Actual")
@@ -807,7 +943,7 @@ if st.session_state.rol == "feriante":
                 with col2:
                     nuevo_precio = st.number_input(
                         "Precio", 
-                        value=precio_actual,  # ← AHORA ES FLOAT
+                        value=precio_actual,
                         step=100.0, 
                         format="%.0f",
                         key=f"precio_{p[0]}",
@@ -817,7 +953,7 @@ if st.session_state.rol == "feriante":
                 with col3:
                     nuevo_stock = st.number_input(
                         "Stock", 
-                        value=stock_actual,  # ← AHORA ES FLOAT
+                        value=stock_actual,
                         step=5.0, 
                         format="%.1f",
                         key=f"stock_{p[0]}",
@@ -827,18 +963,18 @@ if st.session_state.rol == "feriante":
                 with col4:
                     if st.button(f"💾", key=f"save_{p[0]}", help="Guardar cambios"):
                         if nuevo_precio != precio_actual or nuevo_stock != stock_actual:
-                            actualizar_producto(p[0], nuevo_precio, nuevo_stock)
-                            st.success(f"✅ {p[2]} actualizado")
+                            if actualizar_producto(p[0], nuevo_precio, nuevo_stock):
+                                st.success(f"✅ {p[2]} actualizado")
+                                st.cache_data.clear()
+                                time.sleep(0.5)
+                                st.rerun()
+                with col5:
+                    if st.button(f"🗑️", key=f"del_{p[0]}", help="Eliminar producto"):
+                        if eliminar_producto(p[0]):
+                            st.success(f"❌ {p[2]} eliminado")
                             st.cache_data.clear()
                             time.sleep(0.5)
                             st.rerun()
-                with col5:
-                    if st.button(f"🗑️", key=f"del_{p[0]}", help="Eliminar producto"):
-                        eliminar_producto(p[0])
-                        st.success(f"❌ {p[2]} eliminado")
-                        st.cache_data.clear()
-                        time.sleep(0.5)
-                        st.rerun()
                 st.markdown("---")
             
             # Mostrar productos con stock bajo
@@ -849,9 +985,6 @@ if st.session_state.rol == "feriante":
                     st.write(f"- **{p[2]}**: {float(p[4]):.1f} kg disponibles")
         else:
             st.info("📭 No hay productos cargados. Ve a la pestaña 'Agregar Producto' para comenzar.")
-
-
-    # ----- TAB 2: AGREGAR NUEVO PRODUCTO -----
 
     # ----- TAB 2: AGREGAR NUEVO PRODUCTO -----
     with tab2:
@@ -873,14 +1006,11 @@ if st.session_state.rol == "feriante":
                     value="1000"
                 )
                 
-                # Función para formatear y mostrar el precio ingresado
                 def mostrar_precio_formateado(texto):
                     try:
-                        # Limpiar caracteres no numéricos (excepto el punto y coma que usamos para separar miles)
                         limpio = texto.replace(".", "").replace(",", "").strip()
                         if limpio.isdigit():
                             valor = int(limpio)
-                            # Formato chileno: 1.200
                             return f"💰 Convertido a: ${valor:,.0f}".replace(",", ".")
                     except:
                         pass
@@ -907,7 +1037,6 @@ if st.session_state.rol == "feriante":
                 if not nombre_producto:
                     errores.append("El nombre del producto es obligatorio")
                 
-                # Procesar precio
                 try:
                     precio_limpio = precio_texto.replace(".", "").replace(",", "").strip()
                     if not precio_limpio.isdigit():
@@ -923,13 +1052,14 @@ if st.session_state.rol == "feriante":
                     for error in errores:
                         st.error(f"❌ {error}")
                 else:
-                    agregar_producto(email_feriante, nombre_producto, precio_producto, stock_inicial)
-                    st.success(f"✅ Producto '{nombre_producto}' agregado correctamente")
-                    st.info(f"💰 Precio guardado: ${precio_producto:,.0f}".replace(",", "."))
-                    st.cache_data.clear()
-                    time.sleep(2)
-                    st.rerun()
-     # ----- TAB 3: VENTA (carrito) -----
+                    if agregar_producto(email_feriante, nombre_producto, precio_producto, stock_inicial):
+                        st.success(f"✅ Producto '{nombre_producto}' agregado correctamente")
+                        st.info(f"💰 Precio guardado: ${precio_producto:,.0f}".replace(",", "."))
+                        st.cache_data.clear()
+                        time.sleep(2)
+                        st.rerun()
+    
+    # ----- TAB 3: VENTA (carrito) -----
     with tab3:
         st.header("🛒 Carrito de Compras")
         productos = get_productos()
@@ -981,13 +1111,14 @@ if st.session_state.rol == "feriante":
                 tipo_pago, confirmado = mostrar_seccion_pago(total, "feriante")
                 
                 if confirmado:
-                    registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
-                    st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
-                    st.session_state.carrito = []
-                    st.balloons()
-                    st.cache_data.clear()
-                    time.sleep(1)
-                    st.rerun()
+                    venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
+                    if venta_id:
+                        st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
+                        st.session_state.carrito = []
+                        st.balloons()
+                        st.cache_data.clear()
+                        time.sleep(1)
+                        st.rerun()
                 
                 if st.button("🗑️ Vaciar Carrito", key="vaciar_feriante"):
                     limpiar_carrito()
@@ -1020,7 +1151,7 @@ if st.session_state.rol == "feriante":
         else:
             st.info("📭 No hay ventas en la última semana")
     
-    # ----- TAB 5: MERMAS (con resumen y detalle) -----
+    # ----- TAB 5: MERMAS -----
     with tab5:
         st.header("⚠️ Registrar Nueva Merma")
         
@@ -1038,11 +1169,12 @@ if st.session_state.rol == "feriante":
             
             if st.button("⚠️ Registrar Merma", use_container_width=True):
                 if cantidad_merma <= opciones[producto_merma]['stock']:
-                    registrar_merma(opciones[producto_merma]['id'], cantidad_merma, "prueba@ejemplo.com", motivo)
-                    st.success(f"✅ Merma registrada: {cantidad_merma} kg de {producto_merma}")
-                    st.cache_data.clear()
-                    time.sleep(1)
-                    st.rerun()
+                    venta_id = registrar_merma(opciones[producto_merma]['id'], cantidad_merma, "prueba@ejemplo.com", motivo)
+                    if venta_id:
+                        st.success(f"✅ Merma registrada: {cantidad_merma} kg de {producto_merma}")
+                        st.cache_data.clear()
+                        time.sleep(1)
+                        st.rerun()
                 else:
                     st.error(f"❌ Stock insuficiente. Solo hay {opciones[producto_merma]['stock']:.1f} kg")
         
@@ -1059,7 +1191,6 @@ if st.session_state.rol == "feriante":
                 st.dataframe(df_resumen, use_container_width=True)
             
             with col2:
-                # Gráfico de mermas por producto
                 fig_mermas = px.bar(
                     df_resumen, 
                     x='producto', 
@@ -1071,7 +1202,6 @@ if st.session_state.rol == "feriante":
                 )
                 st.plotly_chart(fig_mermas, use_container_width=True)
             
-            # Métricas totales
             total_kg_perdidos = df_resumen['total_kg_perdidos'].sum()
             total_mermas = df_resumen['cantidad_mermas'].sum()
             
@@ -1089,7 +1219,6 @@ if st.session_state.rol == "feriante":
         
         df_detalle = get_mermas_detalle()
         if not df_detalle.empty:
-            # Selector de filtro por producto
             productos_merma = ["Todos"] + sorted(df_detalle['producto'].unique().tolist())
             filtro_producto = st.selectbox("🔍 Filtrar por producto", productos_merma)
             
@@ -1098,7 +1227,6 @@ if st.session_state.rol == "feriante":
             
             st.dataframe(df_detalle, use_container_width=True)
             
-            # Exportar a CSV
             csv = df_detalle.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Descargar historial de mermas (CSV)",
@@ -1179,13 +1307,14 @@ elif st.session_state.rol == "ayudante":
             tipo_pago, confirmado = mostrar_seccion_pago(total, "ayudante")
             
             if confirmado:
-                registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
-                st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
-                st.session_state.carrito = []
-                st.balloons()
-                st.cache_data.clear()
-                time.sleep(1)
-                st.rerun()
+                venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
+                if venta_id:
+                    st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
+                    st.session_state.carrito = []
+                    st.balloons()
+                    st.cache_data.clear()
+                    time.sleep(1)
+                    st.rerun()
             
             if st.button("🗑️ Vaciar Carrito", key="vaciar_ayudante"):
                 limpiar_carrito()
@@ -1201,7 +1330,7 @@ elif st.session_state.rol == "ayudante":
 
 else:
     st.warning("👤 **Modo Invitado** - Sin autenticación")
-    st.info("Para usar el carrito de compras múltiple, ingresa como Ayudante o Feriante")
+    st.info("Para usar el carrito de compras, ingresa como Ayudante o Feriante")
     
     productos = get_productos()
     if productos:
@@ -1220,7 +1349,3 @@ else:
 
 st.markdown("---")
 st.caption(f"🛒 {st.session_state.negocio_nombre} - Frescura como nunca | Powered by Streamlit")
-
-#para ejecutar colocamos en la terminal
-#streamlit run app.py
-#streamlit run app.py
