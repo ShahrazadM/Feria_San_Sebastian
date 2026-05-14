@@ -27,4 +27,6 @@ se usa stremlit paar simular como fucnionarian apshet ya que apshet gratuito no 
 - **Frontend:** Streamlit
 - **Backend:** Supabase (PostgreSQL)
 - **Lenguaje:** Python 3.13
+
+  #feriasansebastian-prxenyhpywrwh6owpnanjv
   
