@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 # ============================================
 st.set_page_config(page_title="Frutería San Sebastián", page_icon="🛒", layout="wide")
 
-# CSS personalizado - Incluye animación del carrito
+# CSS personalizado - Incluye animación del carrito y botón rojo
 st.markdown("""
 <style>
     /* === FONDO GENERAL === */
@@ -119,6 +119,18 @@ st.markdown("""
     button:has(> div:contains("CONFIRMAR PAGO")):hover,
     button:contains("CONFIRMAR PAGO"):hover {
         background-color: #0288D1 !important;
+    }
+    
+    /* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
+    button:contains("RECHAZAR"),
+    button:contains("CANCELAR"),
+    button:contains("RECHAZAR / CANCELAR VENTA") {
+        background-color: #f44336 !important;
+    }
+    button:contains("RECHAZAR"):hover,
+    button:contains("CANCELAR"):hover,
+    button:contains("RECHAZAR / CANCELAR VENTA"):hover {
+        background-color: #d32f2f !important;
     }
     
     /* === BOTÓN CERRAR SESIÓN (ROJO) === */
@@ -956,6 +968,16 @@ def mostrar_seccion_pago(total, key_prefix=""):
         
         return None, False
 
+
+def mostrar_boton_rechazar(key_prefix=""):
+    """Muestra el botón rojo para rechazar/cancelar la venta"""
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("❌ RECHAZAR / CANCELAR VENTA", key=f"{key_prefix}_rechazar", use_container_width=True):
+            return True
+    return False
+
+
 # ============================================
 # TÍTULO
 # ============================================
@@ -1172,19 +1194,33 @@ if st.session_state.rol == "feriante":
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # Mostrar sección de pago (confirmar)
                 tipo_pago, confirmado = mostrar_seccion_pago(total, "feriante")
+                
+                # Mostrar botón de rechazar debajo
+                cancelado = mostrar_boton_rechazar("feriante")
                 
                 if confirmado:
                     venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
                     if venta_id:
                         st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                         st.session_state.carrito = []
-                        # Mostrar animación del carrito en lugar de globos
+                        # Mostrar animación del carrito
                         mostrar_carrito_animado()
                         st.cache_data.clear()
                         time.sleep(0.5)
                         st.rerun()
                 
+                elif cancelado:
+                    # ❌ Cancelar venta - NO descuenta stock
+                    st.error("❌ Venta cancelada por el vendedor. El stock NO se ha descontado.")
+                    st.session_state.carrito = []
+                    st.cache_data.clear()
+                    time.sleep(2)
+                    st.rerun()
+                
+                # Botón separador para vaciar carrito (opcional)
+                st.markdown("---")
                 if st.button("🗑️ Vaciar Carrito", key="vaciar_feriante"):
                     limpiar_carrito()
                     st.rerun()
@@ -1369,19 +1405,33 @@ elif st.session_state.rol == "ayudante":
             </div>
             """, unsafe_allow_html=True)
             
+            # Mostrar sección de pago (confirmar)
             tipo_pago, confirmado = mostrar_seccion_pago(total, "ayudante")
+            
+            # Mostrar botón de rechazar debajo
+            cancelado = mostrar_boton_rechazar("ayudante")
             
             if confirmado:
                 venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
                 if venta_id:
                     st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                     st.session_state.carrito = []
-                    # Mostrar animación del carrito en lugar de globos
+                    # Mostrar animación del carrito
                     mostrar_carrito_animado()
                     st.cache_data.clear()
                     time.sleep(0.5)
                     st.rerun()
             
+            elif cancelado:
+                # ❌ Cancelar venta - NO descuenta stock
+                st.error("❌ Venta cancelada por el vendedor. El stock NO se ha descontado.")
+                st.session_state.carrito = []
+                st.cache_data.clear()
+                time.sleep(2)
+                st.rerun()
+            
+            # Botón separador para vaciar carrito (opcional)
+            st.markdown("---")
             if st.button("🗑️ Vaciar Carrito", key="vaciar_ayudante"):
                 limpiar_carrito()
                 st.rerun()
