@@ -140,9 +140,14 @@ $$ LANGUAGE plpgsql;
 | **Dificultad** | Media | Baja |
 
 > **Conclusión:** Ambos funcionan igual. La diferencia está en la facilidad de despliegue.
+### 📊 **Comparativa 
 
-> **En AMBOS casos, el trigger vive en la base de datos y Python SOLO inserta registros. La lógica de negocio (descontar stock) está en la BD, que es exactamente como debe ser.** 🚀
----
+| Neon | Supabase |
+|------|----------|
+| ⏱️ Se suspende a los 5 minutos | 🔄 Permanece activo siempre |
+| 🐢 Reactivación lenta (2-5 seg) | ⚡ Respuesta instantánea |
+| 💰 Plan pago para desactivar | 💰 Gratuito sin suspensión |
+
 
   #:) Para ingresar entrar desde link de la barra de direcciones:
   https://feriasansebastian-prxenyhpywrwh6owpnanjv.streamlit.app/
