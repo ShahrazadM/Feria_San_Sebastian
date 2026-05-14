@@ -4,9 +4,9 @@
 
 El Demo se desarrolló en dos fases:
 
-1. **Neon (prototipo):** Más ligero, validamos triggers PL/pgSQL y control de stock.
-2. **Supabase (producción):** Migramos por su facilidad de despliegue (no requiere whitelist IP) y porque no suspende la BD por inactividad (Neon lo hace a los 5 min).
-**Conclusión:** Validamos con Neon, elegimos Supabase por robustez y mejor comportamiento en la nube.
+1. **Neon :** Más ligero, validamos triggers PL/pgSQL y control de stock.Una ves que nos aseguramos que funcionono la conxion y su logica de negocio incluido los trigues  pasamos a Supabase:
+2. **Supabase :** Migramos por su facilidad de despliegue (no requiere whitelist IP) y porque no suspende la BD por inactividad (Neon lo hace a los 5 min).
+**Conclusión:** Validamos con Neon, elegimos Supabase por robustez y optimo comportamiento en la nube.
 
 ---
 
