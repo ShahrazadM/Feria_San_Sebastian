@@ -94,102 +94,53 @@ st.markdown("""
         animation: carritoSubiendo 1.5s ease-out forwards;
     }
     
-   /* === ESTILOS BASE PARA BOTONES === */
-.stButton > button {
-    border-radius: 10px !important;
-    border: none !important;
-    font-weight: bold !important;
-    font-size: 1rem !important;
-    padding: 0.6rem 1rem !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-}
-.stButton > button:hover {
-    transform: scale(1.02) !important;
-}
-
-/* === BOTÓN CONFIRMAR PAGO (CELESTE) - Usando clase específica === */
-button:has(> div:contains("CONFIRMAR PAGO EN EFECTIVO")),
-button:has(> div:contains("CONFIRMAR PAGO CON TARJETA")) {
-    background-color: #03A9F4 !important;
-    color: white !important;
-}
-button:has(> div:contains("CONFIRMAR PAGO EN EFECTIVO")):hover,
-button:has(> div:contains("CONFIRMAR PAGO CON TARJETA")):hover {
-    background-color: #0288D1 !important;
-}
-
-/* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
-button:has(> div:contains("RECHAZAR / CANCELAR VENTA")) {
-    background-color: #f44336 !important;
-    color: white !important;
-}
-button:has(> div:contains("RECHAZAR / CANCELAR VENTA")):hover {
-    background-color: #d32f2f !important;
-}
-
-/* === BOTONES VERDES (Agregar, Guardar, Vaciar Carrito, etc.) === */
-.stButton button:has(> div:contains("Agregar")),
-.stButton button:has(> div:contains("Guardar")),
-.stButton button:has(> div:contains("Vaciar Carrito")),
-.stButton button:has(> div:contains("Registrar")),
-.stButton button:has(> div:contains("➕ Agregar")),
-.stButton button:has(> div:contains("💾")) {
-    background-color: #4CAF50 !important;
-    color: white !important;
-}
-.stButton button:has(> div:contains("Agregar")):hover,
-.stButton button:has(> div:contains("Guardar")):hover,
-.stButton button:has(> div:contains("Vaciar Carrito")):hover,
-.stButton button:has(> div:contains("Registrar")):hover,
-.stButton button:has(> div:contains("➕ Agregar")):hover,
-.stButton button:has(> div:contains("💾")):hover {
-    background-color: #45a049 !important;
-}
-
-/* === BOTÓN CERRAR SESIÓN (ROJO) === */
-.stButton button:has(> div:contains("Cerrar sesión")),
-.stButton button:has(> div:contains("Cerrar Sesión (Feriante)")) {
-    background-color: #f44336 !important;
-    color: white !important;
-}
-.stButton button:has(> div:contains("Cerrar sesión")):hover,
-.stButton button:has(> div:contains("Cerrar Sesión (Feriante)")):hover {
-    background-color: #d32f2f !important;
-}
-
-/* === BOTÓN ELIMINAR (🗑️) - ROJO CLARO === */
-.stButton button:has(> div:contains("🗑️")) {
-    background-color: #ff7043 !important;
-    color: white !important;
-}
-.stButton button:has(> div:contains("🗑️")):hover {
-    background-color: #f4511e !important;
-}
-
-/* === BOTÓN CAMBIAR MODO (VERDE OSCURO) === */
-.stButton button:has(> div:contains("Cambiar a Modo Ayudante")) {
-    background-color: #2E7D32 !important;
-    color: white !important;
-}
-.stButton button:has(> div:contains("Cambiar a Modo Ayudante")):hover {
-    background-color: #1B5E20 !important;
-}
-
-/* === BOTÓN INGRESAR - VERDE OSCURO === */
-.stButton button:has(> div:contains("Ingresar")) {
-    background-color: #2E7D32 !important;
-    color: white !important;
-}
-.stButton button:has(> div:contains("Ingresar")):hover {
-    background-color: #1B5E20 !important;
-}
-
-/* === SIDEBAR - mantener colores originales === */
-[data-testid="stSidebar"] .stButton > button {
-    background-color: #4CAF50 !important;
-}
-
+    /* === ESTILOS BASE PARA BOTONES === */
+    .stButton > button {
+        background-color: #4CAF50 !important;
+        color: white !important;
+        border-radius: 10px !important;
+        border: none !important;
+        font-weight: bold !important;
+        font-size: 1rem !important;
+        padding: 0.6rem 1rem !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+    .stButton > button:hover {
+        background-color: #45a049 !important;
+        transform: scale(1.02) !important;
+    }
+    
+    /* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
+    button:contains("CONFIRMAR PAGO") {
+        background-color: #03A9F4 !important;
+    }
+    button:contains("CONFIRMAR PAGO"):hover {
+        background-color: #0288D1 !important;
+    }
+    
+    /* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
+    button:contains("RECHAZAR"),
+    button:contains("CANCELAR"),
+    button:contains("RECHAZAR / CANCELAR VENTA") {
+        background-color: #f44336 !important;
+    }
+    button:contains("RECHAZAR"):hover,
+    button:contains("CANCELAR"):hover,
+    button:contains("RECHAZAR / CANCELAR VENTA"):hover {
+        background-color: #d32f2f !important;
+    }
+    
+    /* === BOTÓN CERRAR SESIÓN (ROJO) === */
+    button:contains("Cerrar sesión"),
+    button:contains("CERRAR SESIÓN") {
+        background-color: #f44336 !important;
+    }
+    button:contains("Cerrar sesión"):hover,
+    button:contains("CERRAR SESIÓN"):hover {
+        background-color: #d32f2f !important;
+    }
+    
     /* === CARRITO CARD === */
     .cart-header {
         background: #E8F5E9 !important;
@@ -315,7 +266,9 @@ button:has(> div:contains("RECHAZAR / CANCELAR VENTA")):hover {
         color: #1A1A1A !important;
     }
     
-
+    [data-testid="stSidebar"] .stButton > button {
+        background-color: #4CAF50 !important;
+    }
     
     /* === BARRA SUPERIOR (GITHUB/STREAMLIT) === */
     .stApp > header {
