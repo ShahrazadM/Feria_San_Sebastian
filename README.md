@@ -27,6 +27,10 @@ se usa stremlit paar simular como fucnionarian apshet ya que apshet gratuito no 
 - **Frontend:** Streamlit
 - **Backend:** Supabase (PostgreSQL)
 - **Lenguaje:** Python 3.13
+  
+  Para engresar entrar desde link de la barra de direcciones:
+  https://feriasansebastian-prxenyhpywrwh6owpnanjv.streamlit.app/
+  
 
   #feriasansebastian-prxenyhpywrwh6owpnanjv
   
