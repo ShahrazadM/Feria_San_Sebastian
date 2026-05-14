@@ -94,7 +94,7 @@ st.markdown("""
         animation: carritoSubiendo 1.5s ease-out forwards;
     }
     
-/* === ESTILOS BASE PARA BOTONES (SIN COLOR) === */
+/* === ESTILOS BASE PARA BOTONES (sin color por defecto) === */
 .stButton > button {
     border-radius: 10px !important;
     border: none !important;
@@ -108,65 +108,94 @@ st.markdown("""
     transform: scale(1.02) !important;
 }
 
-/* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
-button:contains("CONFIRMAR PAGO") {
-    background-color: #03A9F4 !important;
-    color: white !important;
-}
-button:contains("CONFIRMAR PAGO"):hover {
-    background-color: #0288D1 !important;
-}
-
-/* === BOTÓN RECHAZAR (ROJO) === */
-button:contains("RECHAZAR"),
-button:contains("CANCELAR") {
+/* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
+.stButton button:has(div:contains("RECHAZAR")),
+.stButton button:has(div:contains("CANCELAR")) {
     background-color: #f44336 !important;
     color: white !important;
 }
-button:contains("RECHAZAR"):hover,
-button:contains("CANCELAR"):hover {
+.stButton button:has(div:contains("RECHAZAR")):hover,
+.stButton button:has(div:contains("CANCELAR")):hover {
     background-color: #d32f2f !important;
 }
 
+/* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
+.stButton button:has(div:contains("CONFIRMAR PAGO")) {
+    background-color: #03A9F4 !important;
+    color: white !important;
+}
+.stButton button:has(div:contains("CONFIRMAR PAGO")):hover {
+    background-color: #0288D1 !important;
+}
+
 /* === BOTÓN CERRAR SESIÓN (ROJO) === */
-button:contains("Cerrar sesión"),
-button:contains("CERRAR SESIÓN"),
-button:contains("Cerrar Sesión (Feriante)") {
+.stButton button:has(div:contains("Cerrar sesión")),
+.stButton button:has(div:contains("Cerrar Sesión")),
+.stButton button:has(div:contains("CERRAR SESIÓN")) {
     background-color: #f44336 !important;
     color: white !important;
 }
+.stButton button:has(div:contains("Cerrar sesión")):hover,
+.stButton button:has(div:contains("Cerrar Sesión")):hover,
+.stButton button:has(div:contains("CERRAR SESIÓN")):hover {
+    background-color: #d32f2f !important;
+}
 
 /* === BOTÓN INGRESAR (VERDE OSCURO) === */
-button:contains("Ingresar") {
+.stButton button:has(div:contains("Ingresar")) {
     background-color: #2E7D32 !important;
     color: white !important;
 }
-button:contains("Ingresar"):hover {
+.stButton button:has(div:contains("Ingresar")):hover {
     background-color: #1B5E20 !important;
 }
 
-/* === BOTÓN AGREGAR, GUARDAR, VACIAR (VERDE) === */
-button:contains("Agregar"),
-button:contains("Guardar"),
-button:contains("Vaciar"),
-button:contains("Registrar"),
-button:contains("➕"),
-button:contains("💾"),
-button:contains("🗑️ Vaciar Carrito") {
+/* === BOTONES VERDES (Agregar, Guardar, Vaciar Carrito, Registrar, etc.) === */
+.stButton button:has(div:contains("Agregar")),
+.stButton button:has(div:contains("Guardar")),
+.stButton button:has(div:contains("Vaciar Carrito")),
+.stButton button:has(div:contains("Registrar")),
+.stButton button:has(div:contains("➕ Agregar")),
+.stButton button:has(div:contains("💾")) {
     background-color: #4CAF50 !important;
     color: white !important;
 }
-button:contains("Agregar"):hover,
-button:contains("Guardar"):hover,
-button:contains("Vaciar"):hover {
+.stButton button:has(div:contains("Agregar")):hover,
+.stButton button:has(div:contains("Guardar")):hover,
+.stButton button:has(div:contains("Vaciar Carrito")):hover,
+.stButton button:has(div:contains("Registrar")):hover,
+.stButton button:has(div:contains("➕ Agregar")):hover,
+.stButton button:has(div:contains("💾")):hover {
     background-color: #45a049 !important;
 }
 
-/* === SIDEBAR - VERDE === */
-[data-testid="stSidebar"] .stButton > button {
+/* === BOTÓN ELIMINAR (🗑️) - NARANJA === */
+.stButton button:has(div:contains("🗑️")) {
+    background-color: #ff7043 !important;
+    color: white !important;
+}
+.stButton button:has(div:contains("🗑️")):hover {
+    background-color: #f4511e !important;
+}
+
+/* === BOTÓN CAMBIAR MODO (VERDE OSCURO) === */
+.stButton button:has(div:contains("Cambiar a Modo Ayudante")) {
+    background-color: #2E7D32 !important;
+    color: white !important;
+}
+.stButton button:has(div:contains("Cambiar a Modo Ayudante")):hover {
+    background-color: #1B5E20 !important;
+}
+
+/* === SIDEBAR - mantener color verde === */
+[data-testid="stSidebar"] .stButton button {
     background-color: #4CAF50 !important;
     color: white !important;
 }
+[data-testid="stSidebar"] .stButton button:hover {
+    background-color: #45a049 !important;
+}
+
     
     /* === CARRITO CARD === */
     .cart-header {
