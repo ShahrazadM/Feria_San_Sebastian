@@ -95,51 +95,52 @@ st.markdown("""
     }
     
     /* === ESTILOS BASE PARA BOTONES === */
-    .stButton > button {
-        background-color: #4CAF50 !important;
-        color: white !important;
-        border-radius: 10px !important;
-        border: none !important;
-        font-weight: bold !important;
-        font-size: 1rem !important;
-        padding: 0.6rem 1rem !important;
-        transition: all 0.3s ease !important;
-        width: 100% !important;
-    }
-    .stButton > button:hover {
-        background-color: #45a049 !important;
-        transform: scale(1.02) !important;
-    }
-    
-    /* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
-    button:contains("CONFIRMAR PAGO") {
-        background-color: #03A9F4 !important;
-    }
-    button:contains("CONFIRMAR PAGO"):hover {
-        background-color: #0288D1 !important;
-    }
-    
-    /* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
-    button:contains("RECHAZAR"),
-    button:contains("CANCELAR"),
-    button:contains("RECHAZAR / CANCELAR VENTA") {
-        background-color: #f44336 !important;
-    }
-    button:contains("RECHAZAR"):hover,
-    button:contains("CANCELAR"):hover,
-    button:contains("RECHAZAR / CANCELAR VENTA"):hover {
-        background-color: #d32f2f !important;
-    }
-    
-    /* === BOTÓN CERRAR SESIÓN (ROJO) === */
-    button:contains("Cerrar sesión"),
-    button:contains("CERRAR SESIÓN") {
-        background-color: #f44336 !important;
-    }
-    button:contains("Cerrar sesión"):hover,
-    button:contains("CERRAR SESIÓN"):hover {
-        background-color: #d32f2f !important;
-    }
+.stButton > button {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    border: none !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    padding: 0.6rem 1rem !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+}
+.stButton > button:hover {
+    background-color: #45a049 !important;
+    transform: scale(1.02) !important;
+}
+
+/* === BOTÓN CONFIRMAR PAGO (CELESTE) - Usando el texto del botón === */
+button:has(> div:contains("CONFIRMAR PAGO")) {
+    background-color: #03A9F4 !important;
+    color: white !important;
+}
+button:has(> div:contains("CONFIRMAR PAGO")):hover {
+    background-color: #0288D1 !important;
+}
+
+/* === BOTÓN RECHAZAR (ROJO) - Usando el texto del botón === */
+button:has(> div:contains("RECHAZAR")),
+button:has(> div:contains("CANCELAR")) {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+button:has(> div:contains("RECHAZAR")):hover,
+button:has(> div:contains("CANCELAR")):hover {
+    background-color: #d32f2f !important;
+}
+
+/* === BOTÓN CERRAR SESIÓN (ROJO) === */
+button:has(> div:contains("Cerrar sesión")),
+button:has(> div:contains("CERRAR SESIÓN")) {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+button:has(> div:contains("Cerrar sesión")):hover,
+button:has(> div:contains("CERRAR SESIÓN")):hover {
+    background-color: #d32f2f !important;
+}
     
     /* === CARRITO CARD === */
     .cart-header {
