@@ -94,108 +94,74 @@ st.markdown("""
         animation: carritoSubiendo 1.5s ease-out forwards;
     }
     
-/* === ESTILOS BASE PARA BOTONES (sin color por defecto) === */
-.stButton > button {
-    border-radius: 10px !important;
-    border: none !important;
-    font-weight: bold !important;
-    font-size: 1rem !important;
-    padding: 0.6rem 1rem !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-}
-.stButton > button:hover {
-    transform: scale(1.02) !important;
-}
-
-/* === BOTÓN RECHAZAR / CANCELAR VENTA (ROJO) === */
-.stButton button:has(div:contains("RECHAZAR")),
-.stButton button:has(div:contains("CANCELAR")) {
-    background-color: #f44336 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("RECHAZAR")):hover,
-.stButton button:has(div:contains("CANCELAR")):hover {
-    background-color: #d32f2f !important;
-}
-
-/* === BOTÓN CONFIRMAR PAGO (CELESTE) === */
-.stButton button:has(div:contains("CONFIRMAR PAGO")) {
-    background-color: #03A9F4 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("CONFIRMAR PAGO")):hover {
-    background-color: #0288D1 !important;
-}
-
-/* === BOTÓN CERRAR SESIÓN (ROJO) === */
-.stButton button:has(div:contains("Cerrar sesión")),
-.stButton button:has(div:contains("Cerrar Sesión")),
-.stButton button:has(div:contains("CERRAR SESIÓN")) {
-    background-color: #f44336 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("Cerrar sesión")):hover,
-.stButton button:has(div:contains("Cerrar Sesión")):hover,
-.stButton button:has(div:contains("CERRAR SESIÓN")):hover {
-    background-color: #d32f2f !important;
-}
-
-/* === BOTÓN INGRESAR (VERDE OSCURO) === */
-.stButton button:has(div:contains("Ingresar")) {
-    background-color: #2E7D32 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("Ingresar")):hover {
-    background-color: #1B5E20 !important;
-}
-
-/* === BOTONES VERDES (Agregar, Guardar, Vaciar Carrito, Registrar, etc.) === */
-.stButton button:has(div:contains("Agregar")),
-.stButton button:has(div:contains("Guardar")),
-.stButton button:has(div:contains("Vaciar Carrito")),
-.stButton button:has(div:contains("Registrar")),
-.stButton button:has(div:contains("➕ Agregar")),
-.stButton button:has(div:contains("💾")) {
-    background-color: #4CAF50 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("Agregar")):hover,
-.stButton button:has(div:contains("Guardar")):hover,
-.stButton button:has(div:contains("Vaciar Carrito")):hover,
-.stButton button:has(div:contains("Registrar")):hover,
-.stButton button:has(div:contains("➕ Agregar")):hover,
-.stButton button:has(div:contains("💾")):hover {
-    background-color: #45a049 !important;
-}
-
-/* === BOTÓN ELIMINAR (🗑️) - NARANJA === */
-.stButton button:has(div:contains("🗑️")) {
-    background-color: #ff7043 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("🗑️")):hover {
-    background-color: #f4511e !important;
-}
-
-/* === BOTÓN CAMBIAR MODO (VERDE OSCURO) === */
-.stButton button:has(div:contains("Cambiar a Modo Ayudante")) {
-    background-color: #2E7D32 !important;
-    color: white !important;
-}
-.stButton button:has(div:contains("Cambiar a Modo Ayudante")):hover {
-    background-color: #1B5E20 !important;
-}
-
-/* === SIDEBAR - mantener color verde === */
-[data-testid="stSidebar"] .stButton button {
-    background-color: #4CAF50 !important;
-    color: white !important;
-}
-[data-testid="stSidebar"] .stButton button:hover {
-    background-color: #45a049 !important;
-}
-
+    /* === ESTILOS BASE PARA BOTONES === */
+    .stButton > button {
+        border-radius: 10px !important;
+        border: none !important;
+        font-weight: bold !important;
+        font-size: 1rem !important;
+        padding: 0.6rem 1rem !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+    .stButton > button:hover {
+        transform: scale(1.02) !important;
+    }
+    
+    /* === BOTÓN RECHAZAR (ROJO) - PRIMER BOTÓN === */
+    .stButton:first-child button {
+        background-color: #f44336 !important;
+        color: white !important;
+    }
+    .stButton:first-child button:hover {
+        background-color: #d32f2f !important;
+    }
+    
+    /* === BOTÓN CONFIRMAR (CELESTE) - SEGUNDO BOTÓN === */
+    .stButton:nth-child(2) button {
+        background-color: #03A9F4 !important;
+        color: white !important;
+    }
+    .stButton:nth-child(2) button:hover {
+        background-color: #0288D1 !important;
+    }
+    
+    /* === BOTÓN CERRAR SESIÓN (ROJO) === */
+    .stButton button:has(div:contains("Cerrar sesión")),
+    .stButton button:has(div:contains("Cerrar Sesión")),
+    .stButton button:has(div:contains("CERRAR SESIÓN")) {
+        background-color: #f44336 !important;
+        color: white !important;
+    }
+    
+    /* === BOTÓN INGRESAR (VERDE OSCURO) === */
+    .stButton button:has(div:contains("Ingresar")) {
+        background-color: #2E7D32 !important;
+        color: white !important;
+    }
+    
+    /* === BOTONES VERDES (Agregar, Guardar, Vaciar, etc.) === */
+    .stButton button:has(div:contains("Agregar")),
+    .stButton button:has(div:contains("Guardar")),
+    .stButton button:has(div:contains("Vaciar Carrito")),
+    .stButton button:has(div:contains("Registrar")),
+    .stButton button:has(div:contains("➕ Agregar")),
+    .stButton button:has(div:contains("💾")) {
+        background-color: #4CAF50 !important;
+        color: white !important;
+    }
+    
+    /* === BOTÓN ELIMINAR (🗑️) === */
+    .stButton button:has(div:contains("🗑️")) {
+        background-color: #ff7043 !important;
+        color: white !important;
+    }
+    
+    /* === SIDEBAR === */
+    [data-testid="stSidebar"] .stButton button {
+        background-color: #4CAF50 !important;
+        color: white !important;
+    }
     
     /* === CARRITO CARD === */
     .cart-header {
@@ -221,7 +187,7 @@ st.markdown("""
         font-size: 1rem !important;
     }
     
-    /* === CAMPO CONTRASEÑA - FONDO BLANCO OBLIGATORIO === */
+    /* === CAMPO CONTRASEÑA === */
     .stTextInput input[type="password"] {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -230,26 +196,9 @@ st.markdown("""
         padding: 12px 14px !important;
         font-size: 1rem !important;
         min-height: 50px !important;
-        -webkit-text-fill-color: #000000 !important;
-        opacity: 1 !important;
     }
     
-    .stTextInput input[type="password"]:focus {
-        border-color: #2E7D32 !important;
-        outline: none !important;
-        background-color: #FFFFFF !important;
-    }
-    
-    /* Forzar fondo blanco en autocompletado de iPhone */
-    .stTextInput input:-webkit-autofill,
-    .stTextInput input[type="password"]:-webkit-autofill {
-        background-color: #FFFFFF !important;
-        -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-        box-shadow: 0 0 0px 1000px white inset !important;
-        -webkit-text-fill-color: #000000 !important;
-    }
-    
-    /* === SELECTBOX (DESPLEGABLE) - FONDO BLANCO FORZADO === */
+    /* === SELECTBOX === */
     .stSelectbox div[data-baseweb="select"] {
         background-color: #FFFFFF !important;
         border: 2px solid #2E7D32 !important;
@@ -257,96 +206,10 @@ st.markdown("""
         min-height: 52px !important;
     }
     
-    .stSelectbox div[data-baseweb="select"] > div {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-    }
-    
-    /* === DROPDOWN (MENÚ FLOTANTE) - FONDO BLANCO === */
-    div[role="listbox"] {
-        background-color: #FFFFFF !important;
-    }
-    
-    div[role="listbox"] div {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-        padding: 10px 14px !important;
-        font-size: 1rem !important;
-    }
-    
-    div[data-baseweb="popover"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #CCCCCC !important;
-        border-radius: 12px !important;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.15) !important;
-    }
-    
-    div[data-baseweb="popover"] div {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-    }
-    
-    /* === BOTÓN INGRESAR - VERDE OSCURO === */
-    .stButton button:contains("Ingresar") {
-        background-color: #2E7D32 !important;
-        color: white !important;
-        font-weight: bold !important;
-        padding: 12px !important;
-        border-radius: 12px !important;
-        border: none !important;
-        font-size: 1rem !important;
-        margin-top: 8px !important;
-    }
-    
-    .stButton button:contains("Ingresar"):hover {
-        background-color: #1B5E20 !important;
-    }
-    
-    /* === ETIQUETAS === */
-    .stTextInput label, .stSelectbox label {
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
-        color: #1A1A1A !important;
-        margin-bottom: 4px !important;
-    }
-    
-    /* === SIDEBAR (BARRA LATERAL) === */
+    /* === SIDEBAR === */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E0E0E0 !important;
-    }
-    
-    [data-testid="stSidebar"] * {
-        color: #1A1A1A !important;
-    }
-    
-    [data-testid="stSidebar"] .stButton > button {
-        background-color: #4CAF50 !important;
-    }
-    
-    /* === BARRA SUPERIOR (GITHUB/STREAMLIT) === */
-    .stApp > header {
-        background-color: #FFFFFF !important;
-        border-bottom: 1px solid #E0E0E0 !important;
-    }
-    
-    .stApp > header * {
-        color: #1A1A1A !important;
-    }
-    
-    /* === DATAFRAME (TABLAS) === */
-    .stDataFrame {
-        background-color: #FFFFFF !important;
-        border-radius: 8px !important;
-    }
-    
-    /* === ALERTAS === */
-    .stAlert {
-        background-color: #FFFFFF !important;
-        border-left: 4px solid #2E7D32 !important;
-        border-radius: 8px !important;
     }
     
     /* === TABS === */
@@ -372,34 +235,19 @@ st.markdown("""
             font-size: 0.9rem !important;
             padding: 0.5rem 0.8rem !important;
         }
-        
         .business-title h1 {
             font-size: 1.4rem !important;
         }
-        
         .stTabs [data-baseweb="tab"] {
             padding: 6px 12px !important;
             font-size: 0.8rem !important;
         }
-        
-        input, .stSelectbox div[data-baseweb="select"] {
-            font-size: 0.9rem !important;
-        }
-        
         .stSelectbox div[data-baseweb="select"] {
             min-height: 48px !important;
         }
-        
         .stTextInput input[type="password"] {
             min-height: 48px !important;
         }
-    }
-    
-    /* === INFO Y WARNING === */
-    .stInfo, .stWarning, .stError, .stSuccess {
-        background-color: #FFFFFF !important;
-        border-radius: 10px !important;
-        padding: 0.5rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -688,10 +536,7 @@ def eliminar_producto(producto_id):
         return False
     
     try:
-        # Primero eliminar detalles de venta (por ON DELETE CASCADE no sería necesario,
-        # pero lo hacemos explícito por si acaso)
         supabase.table('venta_detalles').delete().eq('producto_id', producto_id).execute()
-        # Luego eliminar el producto
         supabase.table('productos').delete().eq('id', producto_id).execute()
         return True
     except Exception as e:
@@ -699,10 +544,7 @@ def eliminar_producto(producto_id):
         return False
 
 def registrar_venta_completa(feriante_email, items_carrito, tipo_pago, total):
-    """
-    Registra una venta completa en Supabase.
-    NOTA: El trigger 'descontar_stock' en Supabase actualizará el stock automáticamente
-    """
+    """Registra una venta completa en Supabase. El trigger descuenta stock automáticamente"""
     supabase = get_supabase()
     if not supabase:
         return None
@@ -733,16 +575,12 @@ def registrar_venta_completa(feriante_email, items_carrito, tipo_pago, total):
         return None
 
 def registrar_merma(producto_id, cantidad_kg, email, motivo):
-    """
-    Registra una merma en Supabase.
-    El trigger de stock también afecta a las mermas (precio 0)
-    """
+    """Registra una merma en Supabase"""
     supabase = get_supabase()
     if not supabase:
         return None
     
     try:
-        # 1. Insertar venta como merma
         venta_response = supabase.table('ventas').insert({
             'feriante_email': email,
             'total': 0,
@@ -752,7 +590,6 @@ def registrar_merma(producto_id, cantidad_kg, email, motivo):
         
         venta_id = venta_response.data[0]['id']
         
-        # 2. Insertar detalle de merma (precio 0, subtotal 0)
         supabase.table('venta_detalles').insert({
             'venta_id': venta_id,
             'producto_id': producto_id,
@@ -774,10 +611,8 @@ def get_ventas_semanales():
         return pd.DataFrame()
     
     try:
-        # Obtener fecha de hace 7 días
         fecha_limite = (datetime.now() - timedelta(days=7)).isoformat()
         
-        # Consulta con join para obtener los datos completos
         response = supabase.table('ventas')\
             .select('''
                 fecha,
@@ -800,12 +635,11 @@ def get_ventas_semanales():
         if not ventas:
             return pd.DataFrame()
         
-        # Procesar datos anidados
         registros = []
         for venta in ventas:
             for detalle in venta.get('venta_detalles', []):
                 registros.append({
-                    'fecha': venta['fecha'][:10],  # Solo fecha
+                    'fecha': venta['fecha'][:10],
                     'producto': detalle['productos']['nombre'],
                     'cantidad_kg': float(detalle['cantidad_kg']),
                     'subtotal': float(detalle['subtotal']),
@@ -826,7 +660,6 @@ def get_resumen_mermas():
         return pd.DataFrame()
     
     try:
-        # Consulta para obtener resumen de mermas
         response = supabase.table('ventas')\
             .select('''
                 venta_detalles!inner (
@@ -844,7 +677,6 @@ def get_resumen_mermas():
         if not mermas:
             return pd.DataFrame()
         
-        # Agrupar por producto
         resumen = {}
         for venta in mermas:
             for detalle in venta.get('venta_detalles', []):
@@ -856,7 +688,6 @@ def get_resumen_mermas():
                 resumen[nombre]['total_kg'] += cantidad
                 resumen[nombre]['cantidad'] += 1
         
-        # Convertir a DataFrame
         df = pd.DataFrame([
             {'producto': k, 'total_kg_perdidos': v['total_kg'], 'cantidad_mermas': v['cantidad']}
             for k, v in resumen.items()
@@ -1005,8 +836,19 @@ def mostrar_seccion_pago(total, key_prefix=""):
             vuelto = pago_cliente - total
             st.markdown(f"<div class='vuelto-success'>💵 VUELTO: ${vuelto:,.0f}</div>", unsafe_allow_html=True)
             
-            if st.button("✅ CONFIRMAR PAGO EN EFECTIVO", key=f"{key_prefix}_confirmar_efectivo", use_container_width=True):
-                return "efectivo", True
+            # DOS COLUMNAS PARA LOS DOS BOTONES
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # PRIMER BOTÓN - RECHAZAR (ROJO)
+                if st.button("❌ RECHAZAR / CANCELAR VENTA", key=f"{key_prefix}_rechazar", use_container_width=True):
+                    return "rechazar", True
+            
+            with col2:
+                # SEGUNDO BOTÓN - CONFIRMAR (CELESTE)
+                if st.button("✅ CONFIRMAR PAGO EN EFECTIVO", key=f"{key_prefix}_confirmar_efectivo", use_container_width=True):
+                    return "efectivo", True
+                    
         elif pago_cliente > 0 and pago_cliente < total:
             st.error(f"⚠️ Faltan ${total - pago_cliente:,.0f}")
         
@@ -1017,20 +859,20 @@ def mostrar_seccion_pago(total, key_prefix=""):
         st.info("📱 El cliente pagará con el POS de Mercado Pago")
         st.caption("Una vez que el POS confirme el pago, presiona el botón para registrar la venta")
         
-        if st.button("✅ CONFIRMAR PAGO CON TARJETA", key=f"{key_prefix}_confirmar_tarjeta", use_container_width=True):
-            return "tarjeta", True
+        # DOS COLUMNAS PARA LOS DOS BOTONES
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # PRIMER BOTÓN - RECHAZAR (ROJO)
+            if st.button("❌ RECHAZAR / CANCELAR VENTA", key=f"{key_prefix}_rechazar_tarjeta", use_container_width=True):
+                return "rechazar", True
+        
+        with col2:
+            # SEGUNDO BOTÓN - CONFIRMAR (CELESTE)
+            if st.button("✅ CONFIRMAR PAGO CON TARJETA", key=f"{key_prefix}_confirmar_tarjeta", use_container_width=True):
+                return "tarjeta", True
         
         return None, False
-
-
-def mostrar_boton_rechazar(key_prefix=""):
-    """Muestra el botón rojo para rechazar/cancelar la venta"""
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("❌ RECHAZAR / CANCELAR VENTA", key=f"{key_prefix}_rechazar", use_container_width=True):
-            return True
-    return False
-
 
 # ============================================
 # TÍTULO
@@ -1058,7 +900,6 @@ if st.session_state.rol == "feriante":
         if productos:
             st.subheader("📋 Lista de Productos")
             
-            # Cabeceras de la tabla
             col1, col2, col3, col4, col5 = st.columns([2, 1.2, 1.2, 0.6, 0.6])
             with col1:
                 st.markdown("**🍎 Producto**")
@@ -1073,7 +914,6 @@ if st.session_state.rol == "feriante":
             st.markdown("---")
             
             for p in productos:
-                # Asegurar que los valores sean float
                 precio_actual = float(p[3])
                 stock_actual = float(p[4])
                 
@@ -1087,8 +927,7 @@ if st.session_state.rol == "feriante":
                         step=100.0, 
                         format="%.0f",
                         key=f"precio_{p[0]}",
-                        label_visibility="collapsed",
-                        help="Precio por kilogramo"
+                        label_visibility="collapsed"
                     )
                 with col3:
                     nuevo_stock = st.number_input(
@@ -1097,8 +936,7 @@ if st.session_state.rol == "feriante":
                         step=5.0, 
                         format="%.1f",
                         key=f"stock_{p[0]}",
-                        label_visibility="collapsed",
-                        help="Cantidad disponible en kilogramos"
+                        label_visibility="collapsed"
                     )
                 with col4:
                     if st.button(f"💾", key=f"save_{p[0]}", help="Guardar cambios"):
@@ -1117,7 +955,6 @@ if st.session_state.rol == "feriante":
                             st.rerun()
                 st.markdown("---")
             
-            # Mostrar productos con stock bajo
             stock_bajo = [p for p in productos if float(p[4]) < 10]
             if stock_bajo:
                 st.warning("⚠️ **Productos con stock bajo (< 10 kg):**")
@@ -1135,14 +972,12 @@ if st.session_state.rol == "feriante":
             with col1:
                 nombre_producto = st.text_input(
                     "🍎 **Nombre del producto**", 
-                    placeholder="Ej: Plátanos, Paltas, Naranjas",
-                    help="Ejemplo: Manzanas, Tomates, Papas"
+                    placeholder="Ej: Plátanos, Paltas, Naranjas"
                 )
             with col2:
                 precio_texto = st.text_input(
                     "💰 **Precio por kilo ($)**", 
                     placeholder="Ej: 1200  o  1.200  o  1,200",
-                    help="Escribe : 1200, 1.200 o 1,200 ",
                     value="1000"
                 )
                 
@@ -1164,8 +999,7 @@ if st.session_state.rol == "feriante":
                 min_value=0.0, 
                 step=5.0, 
                 format="%.1f", 
-                value=10.0,
-                help="Cantidad inicial en kilos (ej: 10.5 = 10,5 kg)"
+                value=10.0
             )
             email_feriante = st.text_input("📧 **Email del feriante**", value="prueba@ejemplo.com")
             
@@ -1248,32 +1082,26 @@ if st.session_state.rol == "feriante":
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Mostrar sección de pago (confirmar)
-                tipo_pago, confirmado = mostrar_seccion_pago(total, "feriante")
+                # Mostrar sección de pago (ahora incluye ambos botones)
+                resultado, accion = mostrar_seccion_pago(total, "feriante")
                 
-                # Mostrar botón de rechazar debajo
-                cancelado = mostrar_boton_rechazar("feriante")
-                
-                if confirmado:
-                    venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
+                if resultado == "efectivo" or resultado == "tarjeta":
+                    venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, resultado, total)
                     if venta_id:
                         st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                         st.session_state.carrito = []
-                        # Mostrar animación del carrito
                         mostrar_carrito_animado()
                         st.cache_data.clear()
                         time.sleep(0.5)
                         st.rerun()
                 
-                elif cancelado:
-                    # ❌ Cancelar venta - NO descuenta stock
+                elif resultado == "rechazar":
                     st.error("❌ Venta cancelada por el vendedor. El stock NO se ha descontado.")
                     st.session_state.carrito = []
                     st.cache_data.clear()
                     time.sleep(2)
                     st.rerun()
                 
-                # Botón separador para vaciar carrito (opcional)
                 st.markdown("---")
                 if st.button("🗑️ Vaciar Carrito", key="vaciar_feriante"):
                     limpiar_carrito()
@@ -1459,32 +1287,26 @@ elif st.session_state.rol == "ayudante":
             </div>
             """, unsafe_allow_html=True)
             
-            # Mostrar sección de pago (confirmar)
-            tipo_pago, confirmado = mostrar_seccion_pago(total, "ayudante")
+            # Mostrar sección de pago (ahora incluye ambos botones)
+            resultado, accion = mostrar_seccion_pago(total, "ayudante")
             
-            # Mostrar botón de rechazar debajo
-            cancelado = mostrar_boton_rechazar("ayudante")
-            
-            if confirmado:
-                venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, tipo_pago, total)
+            if resultado == "efectivo" or resultado == "tarjeta":
+                venta_id = registrar_venta_completa("prueba@ejemplo.com", st.session_state.carrito, resultado, total)
                 if venta_id:
                     st.success(f"✅ ¡Venta confirmada! Total: ${total:,.0f}")
                     st.session_state.carrito = []
-                    # Mostrar animación del carrito
                     mostrar_carrito_animado()
                     st.cache_data.clear()
                     time.sleep(0.5)
                     st.rerun()
             
-            elif cancelado:
-                # ❌ Cancelar venta - NO descuenta stock
+            elif resultado == "rechazar":
                 st.error("❌ Venta cancelada por el vendedor. El stock NO se ha descontado.")
                 st.session_state.carrito = []
                 st.cache_data.clear()
                 time.sleep(2)
                 st.rerun()
             
-            # Botón separador para vaciar carrito (opcional)
             st.markdown("---")
             if st.button("🗑️ Vaciar Carrito", key="vaciar_ayudante"):
                 limpiar_carrito()
